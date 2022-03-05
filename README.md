@@ -7,7 +7,7 @@
 ```
 2) Import to your code
 ```go
-    import bsapi "github.com/bulatok/bestchange-api"
+    import bcapi "github.com/bulatok/bestchange-api"
 ```
 ## Usage
 
