@@ -1,5 +1,14 @@
 # bestchange-api wrapper on golang
 
+## Installation
+1) Install the package
+```bash
+    go get github.com/bulatok/bestchange-api
+```
+2) Import to your code
+```go
+    import bsapi "github.com/bulatok/bestchange-api"
+```
 ## Usage
 
 Simple example of usage:
