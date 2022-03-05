@@ -11,19 +11,19 @@ $ touch test.go
 package main
 
 import (
-    bca "github.com/bulatok/bestchange-api"
+    bcapi "github.com/bulatok/bestchange-api"
     "log"
     "fmt"
 )
 
 func main(){
-	bc, err := bca.NewBestchange()
+	bc, err := bcapi.NewBestchange()
 	if err != nil{
 		log.Fatal(err)
         }
 	
 	
-	rates, err := bc.GetRatesFromTo("BTC", "QIWI") // BTC -> QIWI
+	rates, err := bc.GetRatesFromTo("Bitcoin (BTC)", "QIWI RUB") // BTC -> QIWI
 	if err != nil{
 		log.Fatal(err)
 	}
@@ -68,21 +68,21 @@ Link to full list - https://www.bestchange.ru/bitcoin-to-qiwi.html
 package main
 
 import (
-    bca "github.com/bulatok/bestchange-api"
+	bcapi "github.com/bulatok/bestchange-api"
     "log"
     "fmt"
     "time"
 )
 
 func main() {
-	bc, err := bca.NewBestchange()
+	bc, err := bcapi.NewBestchange()
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	bc.SortRatesByPrice() // sorting the rates by their prices
 	
-	rates, err := bc.GetRatesFromTo("BTC", "QIWI") // BTC -> QIWI
+	rates, err := bc.GetRatesFromTo("Bitcoin (BTC)", "QIWI RUB") // BTC -> QIWI
 	if err != nil{
 		log.Fatal(err)
 	}
