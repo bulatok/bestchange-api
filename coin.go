@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 var(
-	coinNames = map[string]string{
+	CoinNames = map[string]string{
 		"WMZ":                  "wmz",
 		"WMR":                  "wmr",
 		"WME":                  "wme",

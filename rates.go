@@ -3,6 +3,8 @@ package bcapi
 import (
 	"encoding/json"
 	"fmt"
+	"sort"
+	"strconv"
 	"strings"
 )
 
@@ -37,6 +39,9 @@ type Rate struct {
 	// 0 - negative, 8467 postive
 	Rating string `json:"rating"`
 
+	// Receive is number of coins that customer will get for the price
+	Receive string `json:"receive"`
+
 }
 
 // JSON return the human-readable JSON format string
@@ -56,15 +61,18 @@ func (r *Rate) JSON() (string, error){
 
 // String return the human-readable string
 func (r *Rate) String() string {
-	return fmt.Sprintf("%s -> %s\nMarket - %s\nPrice - %s (can buy from %s - to %s)\nMarket link - %s\nLink to full list - %s\n", r.CoinFrom.ShortName, r.CoinTo.ShortName, r.Market.Name, r.Price, r.PriceFrom, r.PriceTill, r.GenerateMarketLink(), r.GenerateLink())
+	return fmt.Sprintf("%s -> %s\nMarket - %s\nPrice (%s) - %s (can buy from %s - to %s)\nRecive (%s) - %s\nRating - %s\nMarket link - %s\nLink to full list - %s\n",
+		r.CoinFrom.ShortName, r.CoinTo.ShortName, r.Market.Name, r.CoinFrom.ShortName,
+		r.Price, r.PriceFrom, r.PriceTill, r.CoinTo.ShortName, r.Receive, r.Rating,
+		r.GenerateMarketLink(), r.GenerateLink())
 }
 
 // GenerateLink generates link to bestchange site
 //
 // Unfortunately, works incorrectly sometimes
 func (r *Rate) GenerateLink() string{
-	alias1 := coinNames[r.CoinFrom.FullName]
-	alias2 := coinNames[r.CoinTo.FullName]
+	alias1 := CoinNames[r.CoinFrom.FullName]
+	alias2 := CoinNames[r.CoinTo.FullName]
 	return fmt.Sprintf("%s%s-to-%s.html", exchLink, alias1, alias2)
 }
 
@@ -85,19 +93,18 @@ func getRates(data string, coins Coins, markets Markets) ([]Rate, error) {
 			if len(splt) < 11 {
 				return nil, fmt.Errorf("invalid data")
 			}
-			price := splt[4]
-			if strings.Contains(splt[3], ".") {
-				price = splt[3]
-			}
+
 			res = append(res, Rate{
 				CoinFrom:  coins[splt[0]],
 				CoinTo:    coins[splt[1]],
 				Market:    markets[splt[2]],
-				Price:     price,
+				Price:     splt[3],
+				Receive:   splt[4],
 				Rating:    splt[6],
 				PriceFrom: splt[8],
 				PriceTill: splt[9],
 			})
+
 			s = ""
 			continue
 		}
@@ -109,16 +116,12 @@ func getRates(data string, coins Coins, markets Markets) ([]Rate, error) {
 		return nil, fmt.Errorf("invalid data")
 	}
 
-	price := splt[4]
-	if strings.Contains(splt[3], ".") {
-		price = splt[3]
-	}
-
 	res = append(res, Rate{
 		CoinFrom:  coins[splt[0]],
 		CoinTo:    coins[splt[1]],
 		Market:    markets[splt[2]],
-		Price:     price,
+		Price:     splt[3],
+		Receive:   splt[4],
 		Rating:    splt[6],
 		PriceFrom: splt[8],
 		PriceTill: splt[9],
@@ -140,4 +143,22 @@ func newRates(coins Coins, markets Markets) ([]Rate, error) {
 	}
 
 	return rates, nil
+}
+
+func SortRatesByReceive(rates []Rate) ([]Rate){
+	sort.Slice(rates, func(i, j int) bool{
+		f1, _ := strconv.ParseFloat(rates[i].Receive, 32)
+		f2, _ :=  strconv.ParseFloat(rates[j].Receive, 32)
+		return f1 < f2
+	})
+	return rates
+}
+
+func SortRatesByPrice(rates []Rate) ([]Rate){
+	sort.Slice(rates, func(i, j int) bool{
+		f1, _ := strconv.ParseFloat(rates[i].Price, 32)
+		f2, _ :=  strconv.ParseFloat(rates[j].Price, 32)
+		return f1 < f2
+	})
+	return rates
 }

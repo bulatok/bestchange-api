@@ -30,8 +30,7 @@ func main(){
 	if err != nil{
 		log.Fatal(err)
         }
-	
-	
+		
 	rates, err := bc.GetRatesFromTo("Bitcoin (BTC)", "QIWI RUB") // BTC -> QIWI
 	if err != nil{
 		log.Fatal(err)
@@ -50,21 +49,19 @@ func main(){
 Result - 
 ```bash
 BTC -> RUB QIWI
-Market - BitOkk
-Price - 3688119.19000004 (can buy from 0.000724 - to 0.014481)
-Market link - https://www.bestchange.ru/click.php?id=749&from=93&to=63&city=0
+Market - ExLine
+Price (BTC) - 1 (can buy from 0.006 - to 0.024594)
+Recive (RUB QIWI) - 4066000.00000005
+Rating - 0.738
+Market link - https://www.bestchange.ru/click.php?id=952&from=93&to=63&city=0
 Link to full list - https://www.bestchange.ru/bitcoin-to-qiwi.html
 
 BTC -> RUB QIWI
-Market - GrandChange
-Price - 2830009.02530003 (can buy from 0.0025 - to 100)
-Market link - https://www.bestchange.ru/click.php?id=980&from=93&to=63&city=0
-Link to full list - https://www.bestchange.ru/bitcoin-to-qiwi.html
-
-BTC -> RUB QIWI
-Market - RoyalCash
-Price - 3021598.27540002 (can buy from 0.00165475 - to 29.78869)
-Market link - https://www.bestchange.ru/click.php?id=929&from=93&to=63&city=0
+Market - 1Обмен
+Price (BTC) - 1 (can buy from 0.008 - to 0.188452)
+Recive (RUB QIWI) - 3986705.50779997
+Rating - 0.11174 # negative - 0, positive - 11174
+Market link - https://www.bestchange.ru/click.php?id=666&from=93&to=63&city=0
 Link to full list - https://www.bestchange.ru/bitcoin-to-qiwi.html
 
 .........
@@ -77,7 +74,7 @@ Link to full list - https://www.bestchange.ru/bitcoin-to-qiwi.html
 package main
 
 import (
-	bcapi "github.com/bulatok/bestchange-api"
+    bcapi "github.com/bulatok/bestchange-api"
     "log"
     "fmt"
     "time"
@@ -88,14 +85,13 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	bc.SortRatesByPrice() // sorting the rates by their prices
 	
 	rates, err := bc.GetRatesFromTo("Bitcoin (BTC)", "QIWI RUB") // BTC -> QIWI
 	if err != nil{
 		log.Fatal(err)
 	}
 	
+	rates = bcapi.SortRatesByReceive(rates) // sorting the rates by their receive prices
 
 	for _, v := range rates{
 		json, err := v.JSON()
@@ -139,14 +135,15 @@ Result -
       "coin_full_name": "QIWI RUB",
       "coin_short_name": "RUB QIWI"
     },
-    "price": "2294314.64999997",
-    "price_from": "0.0130758",
-    "price_till": "0.21793",
+    "price": "1",
+    "price_from": "0.01334854",
+    "price_till": "0.22247561",
     "market": {
       "market_id": "577",
       "market_name": "Bit-Обменка"
     },
-    "rating": "0.330"
+    "rating": "0.330",
+    "receive": "2247437.4"
   },
   "MarketLink": "https://www.bestchange.ru/bitcoin-to-qiwi.html",
   "FullListLink": "https://www.bestchange.ru/bitcoin-to-qiwi.html"
@@ -155,7 +152,7 @@ Result -
 ......... # etc
 
 # after 1 minute
-
+# it is another offer
 {
   "Rate": {
     "coin_from": {
@@ -168,14 +165,15 @@ Result -
       "coin_full_name": "QIWI RUB",
       "coin_short_name": "RUB QIWI"
     },
-    "price": "2268985.29149998",
-    "price_from": "0.01322177",
-    "price_till": "0.22036282",
+    "price": "1",
+    "price_from": "0.000185",
+    "price_till": "15",
     "market": {
-      "market_id": "577",
-      "market_name": "Bit-Обменка"
+      "market_id": "992",
+      "market_name": "OneMoment"
     },
-    "rating": "0.330"
+    "rating": "0.4097",
+    "receive": "2700143.55999998"
   },
   "MarketLink": "https://www.bestchange.ru/bitcoin-to-qiwi.html",
   "FullListLink": "https://www.bestchange.ru/bitcoin-to-qiwi.html"

@@ -21,7 +21,7 @@ func Test_getRates(t *testing.T) {
 				data: `176;10;840;1;118.44316327;5150000;0.2898;1;10000;49000;0`,
 			},
 			want: []Rate{
-				{Coin{"176", "Открытие", "RUB Открытие"}, Coin{"10", "Tether TRC20 (USDT)", "USDT TRC20"}, "118.44316327", "10000", "49000", Market{"840", "YoChange"}, "0.2898"},
+				{Coin{"176", "Открытие", "RUB Открытие"}, Coin{"10", "Tether TRC20 (USDT)", "USDT TRC20"}, "1", "10000", "49000", Market{"840", "YoChange"}, "0.2898", "118.44316327"},
 			},
 			wantErr: false,
 		},

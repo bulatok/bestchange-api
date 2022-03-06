@@ -2,8 +2,6 @@ package bcapi
 
 import (
 	"fmt"
-	"sort"
-	"strconv"
 )
 
 // Bestchange is a main object of api that provides
@@ -115,18 +113,6 @@ func (b *Bestchange) UpdateRates() error {
 
 	b.Rates = rates
 	return nil
-}
-
-
-// SortRatesByPrice sort the rates by price
-//
-// Not recommended using it :)
-func (bc *Bestchange) SortRatesByPrice(){
-	sort.Slice(bc.Rates, func(i, j int) bool{
-		f1, _ := strconv.ParseFloat(bc.Rates[i].Price, 32)
-		f2, _ :=  strconv.ParseFloat(bc.Rates[j].Price, 32)
-		return f1 < f2
-	})
 }
 
 
