@@ -260,7 +260,7 @@ func getCoins(data string) (Coins, error) {
 	}
 	splt := strings.Split(s, ";")
 	if len(splt) < 4 {
-		return nil, fmt.Errorf("invalid data")
+		return nil, fmt.Errorf("bcapi : invalid data")
 	}
 	res[splt[0]] = Coin{
 		splt[0],

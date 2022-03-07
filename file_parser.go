@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"golang.org/x/text/encoding/charmap"
 	"io"
-	"log"
 	"net/http"
 	"os"
 	"time"
@@ -42,8 +41,8 @@ func getZipFile() error {
 	defer resp.Body.Close()
 
 	out, err := os.Create(zipFileName)
-	if err != nil {
-		log.Fatal(err)
+	if err != nil{
+		return err
 	}
 
 	defer out.Close()
@@ -77,5 +76,5 @@ func openFile(fileName string) (string, error) {
 			return string(data), nil
 		}
 	}
-	return "", fmt.Errorf("file %s was not found", fileName)
+	return "", fmt.Errorf("bcapi : file %s was not found", fileName)
 }

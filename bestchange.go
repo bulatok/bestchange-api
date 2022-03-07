@@ -63,7 +63,7 @@ func (b *Bestchange) GetRatesFromTo(from, to string) ([]Rate, error) {
 		}
 	}
 	if len(res) == 0 {
-		return nil, fmt.Errorf("%s-%s rate does not exits", from, to)
+		return nil, fmt.Errorf("bcapi : %s-%s rate does not exits", from, to)
 	}
 	return res, nil
 }
