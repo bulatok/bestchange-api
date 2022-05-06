@@ -30,6 +30,7 @@ func main() {
 	myClient := &http.Client{
 		Timeout: 30 * time.Second,
         }
+		
 	bc, err := bcapi.NewBestchange(myClient)
 	if err != nil {
 		log.Fatal(err)
