@@ -2,6 +2,7 @@ package bcapi
 
 import (
 	"fmt"
+	"net/http"
 )
 
 // Bestchange is a main object of api that provides
@@ -14,10 +15,11 @@ type Bestchange struct {
 
 // NewBestchange returns the Bestchange object with which we can
 // find the best price for coins
-func NewBestchange() (*Bestchange, error) {
-
+//
+// As argument you should pass your specified http.Client or just pass http.DefaultClient
+func NewBestchange(client *http.Client) (*Bestchange, error) {
 	// downloading the ZIP file
-	if err := getZipFile(); err != nil {
+	if err := getZipFile(client); err != nil {
 		return nil, err
 	}
 
@@ -69,8 +71,8 @@ func (b *Bestchange) GetRatesFromTo(from, to string) ([]Rate, error) {
 }
 
 // UpdateCoins again download the zip file and updates exactly Coins
-func (b *Bestchange) UpdateCoins() error {
-	if err := getZipFile(); err != nil {
+func (b *Bestchange) UpdateCoins(client *http.Client) error {
+	if err := getZipFile(client); err != nil {
 		return err
 	}
 
@@ -85,8 +87,8 @@ func (b *Bestchange) UpdateCoins() error {
 
 
 // UpdateMarktes again download the zip file and updates exactly Markets
-func (b *Bestchange) UpdateMarktes() error {
-	if err := getZipFile(); err != nil {
+func (b *Bestchange) UpdateMarktes(client *http.Client) error {
+	if err := getZipFile(client); err != nil {
 		return err
 	}
 
@@ -101,8 +103,8 @@ func (b *Bestchange) UpdateMarktes() error {
 
 
 // UpdateRates again download the zip file and updates exactly Rates
-func (b *Bestchange) UpdateRates() error {
-	if err := getZipFile(); err != nil {
+func (b *Bestchange) UpdateRates(client *http.Client) error {
+	if err := getZipFile(client); err != nil {
 		return err
 	}
 

@@ -7,15 +7,12 @@ import (
 	"io"
 	"net/http"
 	"os"
-	"time"
 )
 
 const (
 	bcLink     = "http://api.bestchange.ru/info.zip"
 	exchLink   = "https://www.bestchange.ru/"
 	marketLink = "https://www.bestchange.ru/click.php?"
-
-	timeout = 15 * time.Second
 
 	zipFileName = "data.zip"
 
@@ -24,16 +21,14 @@ const (
 	ratesFileName   = "bm_rates.dat"
 )
 
-func getZipFile() error {
-	client := http.Client{
-		Timeout: timeout,
-	}
-
+// getZipFile makes new "GET" http request with the given http.Client
+// to download .zip file with required data
+//
+func getZipFile(client *http.Client) error{
 	req, err := http.NewRequest("GET", bcLink, nil)
 	if err != nil {
 		return err
 	}
-
 	resp, err := client.Do(req)
 	if err != nil {
 		return err

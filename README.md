@@ -3,7 +3,7 @@
 ## Installation
 1) Install the package
 ```bash
-    go get github.com/bulatok/bestchange-api
+    go get -u github.com/bulatok/bestchange-api
 ```
 2) Import to your code
 ```go
@@ -20,23 +20,27 @@ $ touch test.go
 package main
 
 import (
-    bcapi "github.com/bulatok/bestchange-api"
-    "log"
-    "fmt"
+	bcapi "github.com/bulatok/bestchange-api"
+	"log"
+	"fmt"
+	"net/http"
 )
 
-func main(){
-	bc, err := bcapi.NewBestchange()
-	if err != nil{
-		log.Fatal(err)
+func main() {
+	myClient := &http.Client{
+		Timeout: 30 * time.Second,
         }
-		
-	rates, err := bc.GetRatesFromTo("Bitcoin (BTC)", "QIWI RUB") // BTC -> QIWI
-	if err != nil{
+	bc, err := bcapi.NewBestchange(myClient)
+	if err != nil {
 		log.Fatal(err)
 	}
-	
-	for _, v := range rates{
+
+	rates, err := bc.GetRatesFromTo("Bitcoin (BTC)", "QIWI RUB") // BTC -> QIWI
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for _, v := range rates {
 		fmt.Println(v.String())
 	}
 }
@@ -78,10 +82,14 @@ import (
     "log"
     "fmt"
     "time"
+	"net/http"
 )
 
 func main() {
-	bc, err := bcapi.NewBestchange()
+	myClient := &http.Client{
+		Timeout: 30 * time.Second,
+	}
+	bc, err := bcapi.NewBestchange(myClient)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -103,7 +111,7 @@ func main() {
 
 	time.Sleep(time.Minute) // just for example to see the differences
 
-	if err := bc.UpdateRates(); err != nil{ // we can easily update the rates without creating new objects.
+	if err := bc.UpdateRates(myClient); err != nil{ // we can easily update the rates without creating new objects.
 		log.Fatal(err)
 	}
 
