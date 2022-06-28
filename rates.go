@@ -145,6 +145,9 @@ func newRates(coins Coins, markets Markets) ([]Rate, error) {
 	return rates, nil
 }
 
+// SortRatesByReceive sorts the rates ([]Rate) by their Recieve value
+//
+// This function does not modify the data, it returns the sorted one
 func SortRatesByReceive(rates []Rate) ([]Rate){
 	sort.Slice(rates, func(i, j int) bool{
 		f1, _ := strconv.ParseFloat(rates[i].Receive, 32)
@@ -154,6 +157,9 @@ func SortRatesByReceive(rates []Rate) ([]Rate){
 	return rates
 }
 
+// SortRatesByPrice sorts the rates ([]Rate) by their Price value
+//
+// This function does not modify the data, it returns the sorted one
 func SortRatesByPrice(rates []Rate) ([]Rate){
 	sort.Slice(rates, func(i, j int) bool{
 		f1, _ := strconv.ParseFloat(rates[i].Price, 32)

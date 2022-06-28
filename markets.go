@@ -5,6 +5,7 @@ import (
 	"strings"
 )
 
+// Market holds the ID and its Name
 type Market struct {
 	ID   string `json:"market_id"`
 	Name string `json:"market_name"`

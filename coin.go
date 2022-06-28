@@ -5,6 +5,7 @@ import (
 	"strings"
 )
 var(
+	// CoinNames maps long name to short names of exchangers
 	CoinNames = map[string]string{
 		"WMZ":                  "wmz",
 		"WMR":                  "wmr",
@@ -228,7 +229,7 @@ type Coin struct {
 	ShortName string `json:"coin_short_name"`
 }
 
-// Coins is map[string]Coin, which key is the ID
+// Coins is map[string]Coin, which key is the IDCoin
 // and value is a Coin
 type Coins map[string]Coin
 
