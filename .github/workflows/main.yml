@@ -5,7 +5,7 @@ on:
     branches: [main]
 
 jobs:
-  deploy:
+  testing:
     runs-on: ubuntu-latest
     steps:
       - name: Repository checkout
@@ -24,6 +24,6 @@ jobs:
 
       - name: Run golint
         run: golint ./...
-        
+
       - name: Run tests
         run: go test ./... -v
