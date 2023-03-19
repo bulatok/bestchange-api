@@ -10,7 +10,7 @@ import (
 
 var (
 	needDownloadZip = flag.Bool("download_zip",
-		false,
+		true,
 		"if true then will download zip file making http request")
 	downloaded = atomic.Bool{}
 )
