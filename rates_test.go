@@ -1,10 +1,13 @@
 package bcapi
 
 import (
+	"archive/zip"
+	"net/http"
 	"reflect"
 	"testing"
 )
 
+// Test_getRates it is not required to pass this test
 func Test_getRates(t *testing.T) {
 	type args struct {
 		data string
@@ -16,17 +19,20 @@ func Test_getRates(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "valid",
+			name: "OK. valid",
 			args: args{
 				data: `176;10;840;1;118.44316327;5150000;0.2898;1;10000;49000;0`,
 			},
 			want: []Rate{
-				{Coin{"176", "Открытие", "RUB Открытие"}, Coin{"10", "Tether TRC20 (USDT)", "USDT TRC20"}, "1", "10000", "49000", Market{"840", "YoChange"}, "0.2898", "118.44316327"},
+				{Coin{"176", "Открытие RUB", "RUB Открытие"},
+					Coin{"10", "Tether TRC20 (USDT)", "USDT TRC20"},
+					"1", "10000", "49000", Market{"840", "YoChange"},
+					"0.2898", "118.44316327"},
 			},
 			wantErr: false,
 		},
 		{
-			name: "invalid",
+			name: "Invalid data",
 			args: args{
 				data: `12:212:123
 123:123;132`},
@@ -35,8 +41,21 @@ func Test_getRates(t *testing.T) {
 		},
 	}
 
-	coins, _ := newCoins()
-	markets, _ := newMarkets()
+	if *needDownloadZip && !downloaded.Load() {
+		downloaded.Store(true)
+		if err := downloadZipArchive(http.DefaultClient); err != nil {
+			t.Fatalf(err.Error())
+		}
+	}
+
+	zipOpened, err := zip.OpenReader(zipFileName)
+	if err != nil {
+		t.Fatalf(err.Error())
+	}
+	defer zipOpened.Close()
+
+	coins, _ := newCoins(zipOpened)
+	markets, _ := newMarkets(zipOpened)
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

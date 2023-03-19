@@ -1,10 +1,12 @@
 package bcapi
 
 import (
+	"archive/zip"
 	"fmt"
 	"strings"
 )
-var(
+
+var (
 	// CoinNames maps long name to short names of exchangers
 	CoinNames = map[string]string{
 		"WMZ":                  "wmz",
@@ -222,6 +224,7 @@ var(
 		"Binance USD (BUSD)":   "busd",
 	}
 )
+
 // Coin has id, FullName and ShortName
 type Coin struct {
 	ID        string `json:"coin_id"`
@@ -257,6 +260,7 @@ func getCoins(data string) (Coins, error) {
 			s = ""
 			continue
 		}
+		// cpu burst
 		s += string(v)
 	}
 	splt := strings.Split(s, ";")
@@ -271,8 +275,8 @@ func getCoins(data string) (Coins, error) {
 	return res, nil
 }
 
-func newCoins() (Coins, error) {
-	data, err := openFile(coinsFileName)
+func newCoins(zipArchive *zip.ReadCloser) (Coins, error) {
+	data, err := openFile(zipArchive, coinsFileName)
 	if err != nil {
 		return nil, err
 	}

@@ -1,11 +1,17 @@
 package bcapi
 
 import (
+	"archive/zip"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"sort"
 	"strconv"
 	"strings"
+)
+
+var (
+	ErrRatesParsing = errors.New("rates parsing")
 )
 
 // Rate contains information for coinFrom -> coinTo transaction
@@ -41,17 +47,16 @@ type Rate struct {
 
 	// Receive is number of coins that customer will get for the price
 	Receive string `json:"receive"`
-
 }
 
 // JSON return the human-readable JSON format string
-func (r *Rate) JSON() (string, error){
-	type tmp struct{
+func (r *Rate) JSON() (string, error) {
+	type tmp struct {
 		Rate         *Rate
 		MarketLink   string
 		FullListLink string
 	}
-	q := &tmp{Rate: r,MarketLink: r.GenerateLink(), FullListLink: r.GenerateLink()}
+	q := &tmp{Rate: r, MarketLink: r.GenerateLink(), FullListLink: r.GenerateLink()}
 	data, err := json.Marshal(q)
 	if err != nil {
 		return "", err
@@ -70,18 +75,16 @@ func (r *Rate) String() string {
 // GenerateLink generates link to bestchange site
 //
 // Unfortunately, works incorrectly sometimes
-func (r *Rate) GenerateLink() string{
+func (r *Rate) GenerateLink() string {
 	alias1 := CoinNames[r.CoinFrom.FullName]
 	alias2 := CoinNames[r.CoinTo.FullName]
 	return fmt.Sprintf("%s%s-to-%s.html", exchLink, alias1, alias2)
 }
 
-
 // GenerateMarketLink generates the link to the market of this offer
-func (r *Rate) GenerateMarketLink() string{
+func (r *Rate) GenerateMarketLink() string {
 	return fmt.Sprintf("%sid=%s&from=%s&to=%s&city=0", marketLink, r.Market.ID, r.CoinFrom.ID, r.CoinTo.ID)
 }
-
 
 // getRates return the rates by a given string data
 func getRates(data string, coins Coins, markets Markets) ([]Rate, error) {
@@ -91,7 +94,7 @@ func getRates(data string, coins Coins, markets Markets) ([]Rate, error) {
 		if v == '\n' {
 			splt := strings.Split(s, ";")
 			if len(splt) < 11 {
-				return nil, fmt.Errorf("invalid data")
+				return nil, wrapError(ErrRatesParsing.Error())
 			}
 
 			res = append(res, Rate{
@@ -113,7 +116,7 @@ func getRates(data string, coins Coins, markets Markets) ([]Rate, error) {
 
 	splt := strings.Split(s, ";")
 	if len(splt) < 11 {
-		return nil, fmt.Errorf("invalid data")
+		return nil, wrapError(ErrRatesParsing.Error())
 	}
 
 	res = append(res, Rate{
@@ -130,16 +133,15 @@ func getRates(data string, coins Coins, markets Markets) ([]Rate, error) {
 	return res, nil
 }
 
-
-func newRates(coins Coins, markets Markets) ([]Rate, error) {
-	data, err := openFile(ratesFileName)
+func newRates(closer *zip.ReadCloser, coins Coins, markets Markets) ([]Rate, error) {
+	data, err := openFile(closer, ratesFileName)
 	if err != nil {
-		return nil, err
+		return nil, wrapError(err.Error())
 	}
 
 	rates, err := getRates(data, coins, markets)
 	if err != nil {
-		return nil, err
+		return nil, wrapError(err.Error())
 	}
 
 	return rates, nil
@@ -148,10 +150,10 @@ func newRates(coins Coins, markets Markets) ([]Rate, error) {
 // SortRatesByReceive sorts the rates ([]Rate) by their Recieve value
 //
 // This function does not modify the data, it returns the sorted one
-func SortRatesByReceive(rates []Rate) ([]Rate){
-	sort.Slice(rates, func(i, j int) bool{
+func SortRatesByReceive(rates []Rate) []Rate {
+	sort.Slice(rates, func(i, j int) bool {
 		f1, _ := strconv.ParseFloat(rates[i].Receive, 32)
-		f2, _ :=  strconv.ParseFloat(rates[j].Receive, 32)
+		f2, _ := strconv.ParseFloat(rates[j].Receive, 32)
 		return f1 < f2
 	})
 	return rates
@@ -160,10 +162,10 @@ func SortRatesByReceive(rates []Rate) ([]Rate){
 // SortRatesByPrice sorts the rates ([]Rate) by their Price value
 //
 // This function does not modify the data, it returns the sorted one
-func SortRatesByPrice(rates []Rate) ([]Rate){
-	sort.Slice(rates, func(i, j int) bool{
+func SortRatesByPrice(rates []Rate) []Rate {
+	sort.Slice(rates, func(i, j int) bool {
 		f1, _ := strconv.ParseFloat(rates[i].Price, 32)
-		f2, _ :=  strconv.ParseFloat(rates[j].Price, 32)
+		f2, _ := strconv.ParseFloat(rates[j].Price, 32)
 		return f1 < f2
 	})
 	return rates

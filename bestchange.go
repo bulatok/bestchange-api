@@ -1,6 +1,7 @@
 package bcapi
 
 import (
+	"archive/zip"
 	"fmt"
 	"net/http"
 )
@@ -18,25 +19,35 @@ type Bestchange struct {
 //
 // As argument you should pass your specified http.Client or just pass http.DefaultClient
 func NewBestchange(client *http.Client) (*Bestchange, error) {
+	if client == nil {
+		client = http.DefaultClient
+	}
 	// downloading the ZIP file
-	if err := getZipFile(client); err != nil {
-		return nil, err
+	if err := downloadZipArchive(client); err != nil {
+		return nil, wrapError(err.Error())
 	}
 
+	// reading zip archive
+	zipOpened, err := zip.OpenReader(zipFileName)
+	if err != nil {
+		return nil, wrapError(err.Error())
+	}
+	defer zipOpened.Close()
+
 	// getting coins
-	coins, err := newCoins()
+	coins, err := newCoins(zipOpened)
 	if err != nil {
 		return nil, err
 	}
 
 	// getting markets
-	markets, err := newMarkets()
+	markets, err := newMarkets(zipOpened)
 	if err != nil {
 		return nil, err
 	}
 
 	// getting rates
-	rates, err := newRates(coins, markets)
+	rates, err := newRates(zipOpened, coins, markets)
 	if err != nil {
 		return nil, err
 	}
@@ -65,56 +76,71 @@ func (b *Bestchange) GetRatesFromTo(from, to string) ([]Rate, error) {
 		}
 	}
 	if len(res) == 0 {
-		return nil, fmt.Errorf("bcapi : %s-%s rate does not exits", from, to)
+		return nil, wrapError(fmt.Sprintf("%s-%s rate does not exits", from, to))
 	}
 	return res, nil
 }
 
 // UpdateCoins again download the zip file and updates exactly Coins
 func (b *Bestchange) UpdateCoins(client *http.Client) error {
-	if err := getZipFile(client); err != nil {
+	if err := downloadZipArchive(client); err != nil {
 		return err
 	}
 
-	coins, err := newCoins()
+	// reading zip archive
+	zipOpened, err := zip.OpenReader(zipFileName)
 	if err != nil {
-		return err
+		return wrapError(err.Error())
+	}
+	defer zipOpened.Close()
+
+	coins, err := newCoins(zipOpened)
+	if err != nil {
+		return wrapError(err.Error())
 	}
 
 	b.Coins = coins
 	return nil
 }
 
-
 // UpdateMarktes again download the zip file and updates exactly Markets
 func (b *Bestchange) UpdateMarktes(client *http.Client) error {
-	if err := getZipFile(client); err != nil {
+	if err := downloadZipArchive(client); err != nil {
 		return err
 	}
 
-	markets, err := newMarkets()
+	zipOpened, err := zip.OpenReader(zipFileName)
 	if err != nil {
-		return err
+		return wrapError(err.Error())
+	}
+	defer zipOpened.Close()
+
+	markets, err := newMarkets(zipOpened)
+	if err != nil {
+		return wrapError(err.Error())
 	}
 
 	b.Markets = markets
 	return nil
 }
 
-
 // UpdateRates again download the zip file and updates exactly Rates
 func (b *Bestchange) UpdateRates(client *http.Client) error {
-	if err := getZipFile(client); err != nil {
+	if err := downloadZipArchive(client); err != nil {
 		return err
 	}
 
-	rates, err := newRates(b.Coins, b.Markets)
+	zipOpened, err := zip.OpenReader(zipFileName)
 	if err != nil {
-		return err
+		return wrapError(err.Error())
+	}
+	defer zipOpened.Close()
+
+	rates, err := newRates(zipOpened, b.Coins, b.Markets)
+	if err != nil {
+		return wrapError(err.Error())
 	}
 
 	b.Rates = rates
 	return nil
 }
-
-

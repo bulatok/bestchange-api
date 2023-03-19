@@ -2,7 +2,6 @@ package bcapi
 
 import (
 	"archive/zip"
-	"fmt"
 	"golang.org/x/text/encoding/charmap"
 	"io"
 	"net/http"
@@ -21,42 +20,37 @@ const (
 	ratesFileName   = "bm_rates.dat"
 )
 
-// getZipFile makes new "GET" http request with the given http.Client
+// downloadZipArchive makes "GET" http request with the given http.Client
 // to download .zip file with required data
-//
-func getZipFile(client *http.Client) error{
-	req, err := http.NewRequest("GET", bcLink, nil)
+func downloadZipArchive(client *http.Client) error {
+	req, err := http.NewRequest(http.MethodGet, bcLink, nil)
 	if err != nil {
-		return err
+		return wrapError(err.Error())
 	}
 	resp, err := client.Do(req)
 	if err != nil {
-		return err
+		return wrapError(err.Error())
 	}
 	defer resp.Body.Close()
 
 	out, err := os.Create(zipFileName)
-	if err != nil{
-		return err
+	if err != nil {
+		return wrapError(err.Error())
 	}
 
 	defer out.Close()
 
+	// cpu burst
 	_, err = io.Copy(out, resp.Body)
 	if err != nil {
-		return err
+		return wrapError(err.Error())
 	}
 	return nil
 }
 
 // openFile reads .dat from data.zip file and returns body as a string
-func openFile(fileName string) (string, error) {
-	zipFile, err := zip.OpenReader(zipFileName)
-	if err != nil {
-		return "", err
-	}
-	defer zipFile.Close()
-	for _, v := range zipFile.File {
+func openFile(zipArchive *zip.ReadCloser, fileName string) (string, error) {
+	for _, v := range zipArchive.File {
 		if v.Name == fileName {
 			r, err := v.Open()
 			if err != nil {
@@ -71,5 +65,5 @@ func openFile(fileName string) (string, error) {
 			return string(data), nil
 		}
 	}
-	return "", fmt.Errorf("bcapi : file %s was not found", fileName)
+	return "", wrapError(fileName + " file not found")
 }

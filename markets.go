@@ -1,8 +1,13 @@
 package bcapi
 
 import (
-	"fmt"
+	"archive/zip"
+	"errors"
 	"strings"
+)
+
+var (
+	ErrMarketsParsing = errors.New("markets parsing")
 )
 
 // Market holds the ID and its Name
@@ -24,7 +29,7 @@ func getMarkets(data string) (Markets, error) {
 		if v == '\n' {
 			splt := strings.Split(s, ";")
 			if len(splt) < 2 {
-				return nil, fmt.Errorf("invalid data")
+				return nil, wrapErrors(ErrMarketsParsing.Error())
 			}
 			res[splt[0]] = Market{splt[0], splt[1]}
 			s = ""
@@ -34,19 +39,20 @@ func getMarkets(data string) (Markets, error) {
 	}
 	splt := strings.Split(s, ";")
 	if len(splt) < 2 {
-		return nil, fmt.Errorf("invalid data")
+		return nil, wrapErrors(ErrMarketsParsing.Error())
 	}
 	res[splt[0]] = Market{splt[0], splt[1]}
 	return res, nil
 }
-func newMarkets() (Markets, error) {
-	data, err := openFile(marketsFileName)
+func newMarkets(zipArchive *zip.ReadCloser) (Markets, error) {
+	data, err := openFile(zipArchive, marketsFileName)
 	if err != nil {
-		return nil, err
+		return nil, wrapErrors(ErrMarketsParsing.Error(), err.Error())
 	}
+
 	markets, err := getMarkets(data)
 	if err != nil {
-		return nil, err
+		return nil, wrapErrors(ErrMarketsParsing.Error(), err.Error())
 	}
 	return markets, nil
 }
