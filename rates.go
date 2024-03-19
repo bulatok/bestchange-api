@@ -81,6 +81,11 @@ func (r *Rate) GenerateLink() string {
 	return fmt.Sprintf("%s%s-to-%s.html", exchLink, alias1, alias2)
 }
 
+// GenerateLinkCustom generates link to bestchange site custom
+func GenerateLinkCustom(alias1, alias2 string) string {
+	return fmt.Sprintf("%s%s-to-%s.html", exchLink, alias1, alias2)
+}
+
 // GenerateMarketLink generates the link to the market of this offer
 func (r *Rate) GenerateMarketLink() string {
 	return fmt.Sprintf("%sid=%s&from=%s&to=%s&city=0", marketLink, r.Market.ID, r.CoinFrom.ID, r.CoinTo.ID)

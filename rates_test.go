@@ -70,3 +70,63 @@ func Test_getRates(t *testing.T) {
 		})
 	}
 }
+
+// TestGenerateLink it is not required to pass this test
+func TestGenerateLink(t *testing.T) {
+	type args struct {
+		R Rate
+	}
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		{
+			name: "OK. valid",
+			args: args{
+				R: Rate{CoinFrom: Coin{"176", "Тинькофф RUB", "RUB Тинькофф"},
+					CoinTo: Coin{"10", "Сбербанк RUB", "RUB Сбербанк"}},
+			},
+			want: "https://www.bestchange.ru/tinkoff-to-sberbank.html",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := tt.args.R.GenerateLink()
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("getRates() got = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+// TestGenerateLinkCustom it is not required to pass this test
+func TestGenerateLinkCustom(t *testing.T) {
+	type args struct {
+		Alias1, Alias2 string
+	}
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		{
+			name: "OK. valid",
+			args: args{
+				Alias1: "tinkoff",
+				Alias2: "sberbank",
+			},
+			want: "https://www.bestchange.ru/tinkoff-to-sberbank.html",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := GenerateLinkCustom(tt.args.Alias1, tt.args.Alias2)
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("getRates() got = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

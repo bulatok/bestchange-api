@@ -9,6 +9,7 @@ import (
 var (
 	// CoinNames maps long name to short names of exchangers
 	CoinNames = map[string]string{
+		"Альфа-Банк RUB":       "alfaclick",
 		"WMZ":                  "wmz",
 		"WMR":                  "wmr",
 		"WME":                  "wme",
@@ -16,7 +17,7 @@ var (
 		"Приват 24 USD":        "privat24-usd",
 		"ЮMoney":               "yoomoney",
 		"WU RUB":               "wu-rub",
-		"Сбербанк":             "sberbank",
+		"Сбербанк RUB":         "sberbank",
 		"OMG Network (OMG)":    "omg",
 		"WU EUR":               "wu",
 		"WMB":                  "wmb",
@@ -81,7 +82,7 @@ var (
 		"Любой банк UAH":       "wire-uah",
 		"Payoneer":             "payoneer",
 		"ICON (ICX)":           "icon",
-		"Тинькофф":             "tinkoff",
+		"Тинькофф RUB":         "tinkoff",
 		"Contact RUB":          "contact",
 		"ЗК RUB":               "uni-rub",
 		"Payeer USD":           "payeer",
